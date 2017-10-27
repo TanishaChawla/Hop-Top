@@ -1,10 +1,12 @@
-var game = new Phaser.Game(300, 500, Phaser.AUTO, '', { preload: preload, create: create, update: update });
-//game.state.add( 'Play', Jumper.Play );
-//game.state.start( 'Play' );
+var Play = {preload:preload,create:create,update:update};
+var game = new Phaser.Game(300, 500, Phaser.AUTO, '');
+game.state.add( 'Play', Play );
+game.state.start( 'Play' );
 var platforms;
 var scoreText;
 var score=0;
 var stars;
+var clouds;
 function preload(){
 
 game.load.spritesheet('hero','images/dude.png',32,48);
@@ -12,12 +14,13 @@ game.load.image('sky','images/sky.png');
 game.load.image('pixel','images/pixel.png');
 game.load.image('ground','images/pixel.png');
 game.load.image('star','images/star.png',24,24);
-
+game.load.image('replay','images/replay.png',32,32);
+game.load.image('cloud','images/cloud.png',45,45);
 }
 
 function create(){
   game.physics.startSystem(Phaser.Physics.ARCADE);
-  this.stage.backgroundColor = '#6bf';
+  this.stage.backgroundColor = '#FFFACD';
   //game.add.sprite(0,0,'sky');
   game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
   game.scale.maxWidth = this.game.width;
@@ -69,34 +72,52 @@ function update(){
 }
 
 function platformsCreate(){
+  clouds = game.add.group();
   platforms = game.add.group();
   stars = game.add.group();
+
   platforms.enableBody = true;
   stars.enableBody = true;
+  clouds.enableBody = true;
   //var ground = platforms.create(0,game.world.height-64,'ground');
   //ground.scale.setTo(2,2);
   //ground.body.immovable = true;
   platforms.createMultiple( 10, 'pixel' );
   // create the base platform, with buffer on either side so that the hero doesn't fall through
-  platformsCreateOne( -16,game.world.height - 16, game.world.width + 16 );
+  var ground = platformsCreateOne( -16,game.world.height - 16, game.world.width + 16 );
+  ground.body.immovable = true;
   // create a batch of platforms that start to move up the level
+
   for( var i = 0; i < 9; i++ ) {
     platformsCreateOne( game.rnd.integerInRange( 0, game.world.width - 50 ), game.world.height - 100 - 100 * i, 50 );
   }
+
   return platforms;
 }
+
 function platformsCreateOne(x,y,width){
   var platform = platforms.getFirstDead();
   platform.reset( x, y );
   platform.scale.x = width;
   platform.scale.y = 16;
-  platform.body.immovable = true;
+  platform.body.immovable = false;
   var r = Math.random();
   if(r>=0.5)
   {
     var star = stars.create(x+13,y-24,'star');
     star.body.immovable = true;
   }
+  var x = Math.random();
+  if(x>=0.5){
+    var cloud = clouds.create(x+Math.random()*200,y+Math.random()*30,'cloud');
+    cloud.body.immovable = true;
+  }
+  var v=Math.random();
+  if(v>=0.5){
+    var cloud = clouds.create(x-Math.random()*100,y-Math.random()*30,'cloud');
+    cloud.body.immovable=true;
+  }
+
   return platform;
 }
 function heroCreate(){
@@ -132,7 +153,7 @@ function heroMove(){
 
   // handle hero jumping
   if( cursor.up.isDown && game.hero.body.touching.down ) {
-    game.hero.body.velocity.y = -260;
+    game.hero.body.velocity.y = -280;
   }
 
   // wrap world coordinated so that you can warp from left to right and right to left
@@ -149,7 +170,7 @@ function heroMove(){
   // if the hero falls below the camera view, gameover
   if( game.hero.y > game.cameraYMin + game.height) {
     game.hero.kill();
-
+    shutdown();
   }
 }
 function collectStar(player,star){
@@ -160,9 +181,18 @@ function collectStar(player,star){
 function shutdown() {
   // reset everything, or the world will be messed up
   game.world.setBounds( 0, 0, this.game.width, this.game.height );
-  cursor = null;
-  this.hero.destroy();
-  this.hero = null;
-  this.platforms.destroy();
-  this.platforms = null;
+  game.hero.destroy();
+  platforms.destroy();
+  stars.destroy();
+
+  game.add.text(30, 160,'GAME OVER',{ fontSize: '40px', fill: '#ffffff' });
+  game.add.text(100, 240, 'Score: '+score,{fontSize: '24px', fill: '#000000'});
+  var b = game.add.button(134, 280,'replay',reload,game);
+}
+function reload(){
+  game.destroy();
+  game = new Phaser.Game(300, 500, Phaser.AUTO, '');
+  score =0;
+  game.state.add( 'Play', Play );
+  game.state.start('Play');
 }

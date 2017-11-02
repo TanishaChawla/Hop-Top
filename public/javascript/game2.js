@@ -1,5 +1,5 @@
 var Play = {preload:preload,create:create,update:update};
-var game = new Phaser.Game(372 , 620, Phaser.AUTO, '');
+var game = new Phaser.Game(372, 620, Phaser.AUTO, '');
 game.state.add( 'Play', Play );
 game.state.start( 'Play' );
 var platforms;
@@ -17,7 +17,6 @@ game.load.image('ground','images/pixel.png');
 game.load.image('star','images/star.png',24,24);
 game.load.image('replay','images/replay.png',32,32);
 game.load.image('cloud','images/cloud.png',45,45);
-game.load.image('nextarrow','images/next.png',24,24);
 }
 
 function create(){
@@ -41,7 +40,7 @@ function create(){
   heroCreate();
 
   cursor = game.input.keyboard.createCursorKeys();
-  levelText= game.add.text(16,game.camera.y+16,'Level 1',{fontSize: '16px', fill: '#000'});
+  levelText= game.add.text(16,game.camera.y+16,'Level 2',{fontSize: '16px', fill: '#000'});
   scoreText = game.add.text(16,game.camera.y +32 ,'Score: 0',{ fontSize: '16px', fill: '#000' });
   yc = 0;
   game.hero.yChange =0;
@@ -104,7 +103,7 @@ function platformsCreateOne(x,y,width){
   platform.reset( x, y );
   platform.scale.x = width;
   platform.scale.y = 16;
-  platform.body.immovable = true;
+  platform.body.immovable = false;
   var r = Math.random();
   if(r>=0.5)
   {
@@ -170,17 +169,6 @@ function heroMove(){
     score += 1;
     scoreText.text = 'Score: '+score;
     yc = game.hero.yChange;
-    if(score>=500)
-    {
-      game.world.setBounds( 0, 0, this.game.width, this.game.height );
-      game.hero.destroy();
-      platforms.destroy();
-      stars.destroy();
-
-      game.add.text(60, 180,'Level 1 Complete',{ fontSize: '30px', fill: '#000000' });
-      //game.add.text(125, 240, 'Score: '+score,{fontSize: '24px', fill: '#000000'});
-      var b = game.add.button(80, 240,'nextarrow',next,game);
-    }
   }
   // if the hero falls below the camera view, gameover
   if( game.hero.y > game.cameraYMin + game.height) {
@@ -205,12 +193,10 @@ function shutdown() {
   var b = game.add.button(170, 280,'replay',reload,game);
 }
 function reload(){
-  game.destroy();
-  game = new Phaser.Game(372, 620, Phaser.AUTO, '');
-  score =0;
-  game.state.add( 'Play', Play );
-  game.state.start('Play');
-}
-function next(){
-  window.open("/level2","_self");
+//  game.destroy();
+//  game = new Phaser.Game(372, 620, Phaser.AUTO, '');
+//  score =0;
+//  game.state.add( 'Play', Play );
+  window.open("/","_self");
+//  game.state.start('Play');
 }

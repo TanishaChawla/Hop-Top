@@ -13,7 +13,6 @@ var valb,valr,valg;
 function preload(){
 
 game.load.spritesheet('hero','images/balloon.png',640,960);
-game.load.image('sky','images/sky.png');
 game.load.image('pixel','images/pixel.png');
 game.load.image('star','images/star.png',24,24);
 game.load.image('replay','images/replay.png',32,32);
@@ -23,7 +22,7 @@ game.load.image('nextarrow','images/next.png',24,24);
 
 function create(){
   game.physics.startSystem(Phaser.Physics.ARCADE);
-  this.stage.backgroundColor = 'rgb(256,256,256,1)';
+  this.stage.backgroundColor = '#FFFACD';
   game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
   game.scale.maxWidth = this.game.width;
   game.scale.maxHeight = this.game.height;
@@ -216,7 +215,7 @@ function shutdown() {
   platforms.destroy();
   stars.destroy();
 
-  game.add.text(60, 180,'GAME OVER',{ fontSize: '40px', fill: '#ffffff' });
+  game.add.text(60, 180,'GAME OVER',{ fontSize: '40px', fill: '#000000' });
   game.add.text(125, 240, 'Score: '+score,{fontSize: '24px', fill: '#000000'});
   var b = game.add.button(170, 280,'replay',reload,game);
 }

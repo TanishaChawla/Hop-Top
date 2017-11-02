@@ -13,7 +13,6 @@ var valb,valr,valg;
 function preload(){
 
 game.load.spritesheet('hero','images/boy-final.png',640,960);
-game.load.image('sky','images/sky.png');
 game.load.image('pixel','images/pixel.png');
 game.load.image('star','images/star.png',24,24);
 game.load.image('replay','images/replay.png',32,32);
@@ -44,8 +43,8 @@ function create(){
 
   //setting the input keys
   cursor = game.input.keyboard.createCursorKeys();
-  levelText= game.add.text(16,game.camera.y+16,'Level 1',{fontSize: '16px', fill: '#000'});
-  scoreText = game.add.text(16,game.camera.y +32 ,'Score: 0',{ fontSize: '16px', fill: '#000' });
+  levelText= game.add.text(16,game.camera.y+16,'Level 1',{fontSize: '16px', fill: '#ffffff'});
+  scoreText = game.add.text(16,game.camera.y +32 ,'Score: 0',{ fontSize: '16px', fill: '#fff' });
   yc = 0;
   game.hero.yChange =0;
 }
@@ -217,7 +216,7 @@ function shutdown() {
   stars.destroy();
 
   game.add.text(60, 180,'GAME OVER',{ fontSize: '40px', fill: '#ffffff' });
-  game.add.text(125, 240, 'Score: '+score,{fontSize: '24px', fill: '#000000'});
+  game.add.text(125, 240, 'Score: '+score,{fontSize: '24px', fill: '#ffffff'});
   var b = game.add.button(170, 280,'replay',reload,game);
 }
 function reload(){

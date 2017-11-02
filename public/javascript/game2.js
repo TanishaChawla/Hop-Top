@@ -1,5 +1,5 @@
 var Play = {preload:preload,create:create,update:update};
-var game = new Phaser.Game(372, 620, Phaser.AUTO, '');
+var game = new Phaser.Game(372 , 620, Phaser.AUTO, '');
 game.state.add( 'Play', Play );
 game.state.start( 'Play' );
 var platforms;
@@ -8,21 +8,22 @@ var levelText;
 var score=0;
 var stars;
 var clouds;
+var b,r,g;
+var valb,valr,valg;
 function preload(){
 
-game.load.spritesheet('hero','images/dude.png',32,48);
+game.load.spritesheet('hero','images/balloon.png',640,960);
 game.load.image('sky','images/sky.png');
 game.load.image('pixel','images/pixel.png');
-game.load.image('ground','images/pixel.png');
 game.load.image('star','images/star.png',24,24);
 game.load.image('replay','images/replay.png',32,32);
 game.load.image('cloud','images/cloud.png',45,45);
+game.load.image('nextarrow','images/next.png',24,24);
 }
 
 function create(){
   game.physics.startSystem(Phaser.Physics.ARCADE);
-  this.stage.backgroundColor = '#FFFACD';
-  //game.add.sprite(0,0,'sky');
+  this.stage.backgroundColor = 'rgb(256,256,256,1)';
   game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
   game.scale.maxWidth = this.game.width;
   game.scale.maxHeight = this.game.height;
@@ -38,9 +39,12 @@ function create(){
 
   // create hero
   heroCreate();
+  b=-1;
+  val=256;
 
+  //setting the input keys
   cursor = game.input.keyboard.createCursorKeys();
-  levelText= game.add.text(16,game.camera.y+16,'Level 2',{fontSize: '16px', fill: '#000'});
+  levelText= game.add.text(16,game.camera.y+16,'Level 1',{fontSize: '16px', fill: '#000'});
   scoreText = game.add.text(16,game.camera.y +32 ,'Score: 0',{ fontSize: '16px', fill: '#000' });
   yc = 0;
   game.hero.yChange =0;
@@ -70,6 +74,23 @@ function update(){
       platformsCreateOne( game.rnd.integerInRange( 0, this.world.width - 50 ), this.platformYMin - 100, 50 );
     }
   }, game );
+
+  //fly clouds
+  clouds.x +=0.5;
+  game.world.wrap( clouds, clouds.width / 2, false );
+
+  if(score%50==0){
+      valb+=b;
+  }
+
+  if(valb==256){
+    b=-1*b;
+
+  }
+  if(val==128){
+    b=-1*b;
+  }
+  this.stage.backgroundColor = 'rgb(256,256,'+val+',1)';
 
 
 }
@@ -103,7 +124,11 @@ function platformsCreateOne(x,y,width){
   platform.reset( x, y );
   platform.scale.x = width;
   platform.scale.y = 16;
-  platform.body.immovable = false;
+  if(score<=200)
+  platform.body.immovable = true;
+  else {
+    platform.body.immovable = false;
+  }
   var r = Math.random();
   if(r>=0.5)
   {
@@ -116,17 +141,19 @@ function platformsCreateOne(x,y,width){
     cloud.body.immovable = true;
   }
   var v=Math.random();
-  if(v>=0.5){
+  /*if(v>=0.5){
     var cloud = clouds.create(x-Math.random()*100,y-Math.random()*30,'cloud');
     cloud.body.immovable=true;
-  }
+  }*/
 
   return platform;
 }
 function heroCreate(){
-  game.hero = game.add.sprite( game.world.centerX, game.world.height - (100-29-11), 'hero' );
+  game.hero = game.add.sprite( game.world.centerX, 490, 'hero' );
 //  game.hero.anchor.set( 0.5 );
   game.hero.frame=4;
+  game.hero.width = 32;
+  game.hero.height = 48;
   // track where the hero started and how much the distance has changed from that point
   game.hero.yOrig = game.hero.y;
   game.hero.yChange = 0;
@@ -156,7 +183,7 @@ function heroMove(){
 
   // handle hero jumping
   if( cursor.up.isDown && game.hero.body.touching.down ) {
-    game.hero.body.velocity.y = -280;
+    game.hero.body.velocity.y = -260-score*0.00001;
   }
 
   // wrap world coordinated so that you can warp from left to right and right to left
@@ -169,6 +196,7 @@ function heroMove(){
     score += 1;
     scoreText.text = 'Score: '+score;
     yc = game.hero.yChange;
+
   }
   // if the hero falls below the camera view, gameover
   if( game.hero.y > game.cameraYMin + game.height) {
@@ -193,10 +221,9 @@ function shutdown() {
   var b = game.add.button(170, 280,'replay',reload,game);
 }
 function reload(){
-//  game.destroy();
-//  game = new Phaser.Game(372, 620, Phaser.AUTO, '');
-//  score =0;
-//  game.state.add( 'Play', Play );
-  window.open("/","_self");
-//  game.state.start('Play');
+  game.destroy();
+  game = new Phaser.Game(372, 620, Phaser.AUTO, '');
+  score =0;
+  game.state.add( 'Play', Play );
+  game.state.start('Play');
 }

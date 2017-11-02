@@ -11,10 +11,10 @@ app.set("view engine",ejs);
 app.get("/",function(req,res){
   res.render("menu.ejs");
 });
-app.get('/level2',function(req,res){
+app.get('/balloon',function(req,res){
   res.render("level2.ejs");
 })
-app.get('/level1',function(req,res){
+app.get('/hero',function(req,res){
   res.render("level1.ejs");
 })
 app.listen(app.get('port'),function(){

@@ -4,7 +4,6 @@ game.state.add( 'Play', Play );
 game.state.start( 'Play' );
 var platforms;
 var scoreText;
-var levelText;
 var score=0;
 var stars;
 var clouds;
@@ -13,16 +12,16 @@ var valb,valr,valg;
 function preload(){
 
 game.load.spritesheet('hero','images/balloon.png',640,960);
-game.load.image('pixel','images/pixel.png');
-game.load.image('star','images/star.png',24,24);
+game.load.image('pixel','images/platform2.png');
+game.load.image('star','images/star.png',64,64);
 game.load.image('replay','images/replay.png',32,32);
-game.load.image('cloud','images/cloud.png',45,45);
+game.load.image('cloud','images/cloud.png',256,256);
 game.load.image('nextarrow','images/next.png',24,24);
 }
 
 function create(){
   game.physics.startSystem(Phaser.Physics.ARCADE);
-  this.stage.backgroundColor = '#FFFACD';
+  this.stage.backgroundColor = 'rgb(0,34,35,1)';
   game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
   game.scale.maxWidth = this.game.width;
   game.scale.maxHeight = this.game.height;
@@ -38,20 +37,21 @@ function create(){
 
   // create hero
   heroCreate();
-  b=-1;
-  val=256;
+  r=1;
+  valr=0;
+  g=0;
+  b=0;
+  valb=38;
 
   //setting the input keys
   cursor = game.input.keyboard.createCursorKeys();
-  levelText= game.add.text(16,game.camera.y+16,'Level 1',{fontSize: '16px', fill: '#000'});
-  scoreText = game.add.text(16,game.camera.y +32 ,'Score: 0',{ fontSize: '16px', fill: '#000' });
+  scoreText = game.add.text(16,game.camera.y +16 ,'Score: 0',{ fontSize: '16px', fill: '#fff' });
   yc = 0;
   game.hero.yChange =0;
 }
 function update(){
   game.world.setBounds( 0, -game.hero.yChange, game.world.width, game.height + game.hero.yChange );
-  scoreText.y = game.camera.y +32;
-  levelText.y = game.camera.y +16;
+  scoreText.y = game.camera.y +16;
   // the built in camera follow methods won't work for our needs
   // this is a custom follow style that will not ever move down, it only moves up
   game.cameraYMin = Math.min( game.cameraYMin, game.hero.y - game.height + 130 );
@@ -78,18 +78,18 @@ function update(){
   clouds.x +=0.5;
   game.world.wrap( clouds, clouds.width / 2, false );
 
-  if(score%50==0){
-      valb+=b;
-  }
+  if(score%10==0)
+      valr+=r;
 
-  if(valb==256){
-    b=-1*b;
+
+  if(valr>=71){
+    r=-1*r;
 
   }
-  if(val==128){
-    b=-1*b;
+  if(valr<=0){
+    r=-1*r;
   }
-  this.stage.backgroundColor = 'rgb(256,256,'+val+',1)';
+  this.stage.backgroundColor = 'rgb('+valr+',34,35,1)';
 
 
 }
@@ -121,8 +121,8 @@ function platformsCreate(){
 function platformsCreateOne(x,y,width){
   var platform = platforms.getFirstDead();
   platform.reset( x, y );
-  platform.scale.x = width;
-  platform.scale.y = 16;
+  platform.width = width;
+  platform.height = 16;
   if(score<=200)
   platform.body.immovable = true;
   else {
@@ -132,12 +132,16 @@ function platformsCreateOne(x,y,width){
   if(r>=0.5)
   {
     var star = stars.create(x+13,y-24,'star');
+    star.width = 24;
+    star.height = 24;
     star.body.immovable = true;
   }
   var x = Math.random();
   if(x>=0.5){
     var cloud = clouds.create(x+Math.random()*200,y+Math.random()*30,'cloud');
     cloud.body.immovable = true;
+    cloud.height = 64;
+    cloud.width = 64;
   }
   var v=Math.random();
   /*if(v>=0.5){
@@ -182,7 +186,7 @@ function heroMove(){
 
   // handle hero jumping
   if( cursor.up.isDown && game.hero.body.touching.down ) {
-    game.hero.body.velocity.y = -260-score*0.00001;
+    game.hero.body.velocity.y = -280-score*0.00001;
   }
 
   // wrap world coordinated so that you can warp from left to right and right to left
@@ -215,9 +219,11 @@ function shutdown() {
   platforms.destroy();
   stars.destroy();
 
-  game.add.text(60, 180,'GAME OVER',{ fontSize: '40px', fill: '#000000' });
-  game.add.text(125, 240, 'Score: '+score,{fontSize: '24px', fill: '#000000'});
+  game.add.text(60, 180,'GAME OVER',{ fontSize: '40px', fill: '#fff' });
+  game.add.text(125, 240, 'Score: '+score,{fontSize: '24px', fill: '#fff'});
   var b = game.add.button(170, 280,'replay',reload,game);
+  b.width = 32;
+  b.height = 32;
 }
 function reload(){
   game.destroy();

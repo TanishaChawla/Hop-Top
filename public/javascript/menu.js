@@ -5,12 +5,13 @@ game.state.start('Play');
 function preload(){
 
 game.load.spritesheet('hero','images/boy-final.png',640,960);
-game.load.spritesheet('balloon','images/balloon.png',640,960)
+game.load.spritesheet('balloon','images/balloon.png',640,960);
+game.load.image('icon','images/icon.png');
 
 }
 function create(){
   game.physics.startSystem(Phaser.Physics.ARCADE);
-  this.stage.backgroundColor = '#FFFACD';
+  this.stage.backgroundColor = '#2a2929';
   //game.add.sprite(0,0,'sky');
   game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
   game.scale.maxWidth = this.game.width;
@@ -22,7 +23,10 @@ function create(){
   game.cameraYMin = 99999;
   game.platformYMin = 99999;
 
-  game.add.text(100, 100,'Hop-Top',{ fontSize: '40px', fill: '#000000' });
+  var i = game.add.sprite(61,80,'icon');
+  i.width = 250;
+  i.height = 250;
+  game.add.text(90,350 ,'Please select your player!',{ fontSize: '16px', fill: '#fff' });
   var b = game.add.button(100, 380,'hero',playHero,game);
   b.width = 64;
   b.frame=4;
